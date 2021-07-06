@@ -1,6 +1,9 @@
 import 'package:chat_app/helper/constants.dart';
 import 'package:chat_app/services/database.dart';
+import 'package:chat_app/utils/universal_variables.dart';
+import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
+
 
 class ConversationScreen extends StatefulWidget {
   // const ConversationScreen({ Key? key }) : super(key: key);
@@ -15,12 +18,20 @@ class _ConversationScreenState extends State<ConversationScreen> {
   DatabaseMethods databaseMethods = new DatabaseMethods();
   TextEditingController messageController = new TextEditingController();
   Stream chatMessageStream;
-  // var textTo = widget.chatRoomId.toString().
-  // var MessagingTo = getChatRoomId(a, b)
+  bool isWriting = false;
+  bool showEmojiPicker = false;
+  FocusNode textFieldFocus = new FocusNode();
+  
+  
+  
+  String recieverName(){
+      return widget.chatRoomId.toString()
+            .replaceAll("_", "")
+            .replaceAll(Constants.myName, "");
+  }
 
-  Widget ChatMessageList(){
+  Widget chatMessageList(){
     return Container(
-      margin: EdgeInsets.only(bottom: 80.0),
       child: StreamBuilder(
         stream: chatMessageStream,
         builder: (context, snapshot){
@@ -28,8 +39,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
             reverse: true,
             itemCount: snapshot.data.docs.length,
             itemBuilder: (context,index){
-              // print("length hai bhai yeh = ${snapshot.data.docs.length}");
-              
               return MessageTile(
                 snapshot.data.docs[index]["message"],
                 Constants.myName == snapshot.data.docs[index]["sendBy"],
@@ -42,6 +51,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
       ),
     );
   }
+
+
   sendMessage(){
     if(messageController.text.isNotEmpty){ 
        Map<String, dynamic> messageMap = {
@@ -53,6 +64,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
     messageController.text = "";
     }
   }
+
   @override
   void initState() {
     databaseMethods.getConversationMessage(widget.chatRoomId).then((val){
@@ -64,20 +76,39 @@ class _ConversationScreenState extends State<ConversationScreen> {
     super.initState();
   }
 
+  showKeyboard() => textFieldFocus.requestFocus();
+  hideKeyboard() => textFieldFocus.unfocus();
+
+  hideEmojiContainer(){
+    setState(() {
+      showEmojiPicker = false;
+    });
+  }
+
+  // showEmojiContainer(){
+  //   setState(() {
+  //     showEmojiPicker = true;
+  //   });
+  // }
+    toggleEmojiContainer(){
+      setState(() {
+        showEmojiPicker = !showEmojiPicker;
+      });
+    }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: 
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 85,vertical: 10),
-            child: Text(widget.chatRoomId.toString()
-            .replaceAll("_", "")
-            .replaceAll(Constants.myName, ""),
-            style: TextStyle(
-              fontSize: 28.0,
-              fontWeight: FontWeight.bold,
-              ),
+            child: Text(recieverName(),
+              style: TextStyle(
+                fontSize: 28.0,
+                fontWeight: FontWeight.bold,
+                ),
             ),
           ),
           actions: [
@@ -91,64 +122,125 @@ class _ConversationScreenState extends State<ConversationScreen> {
             )
           ],
       ),
-      body: Container(
-        child: Stack(
-          children: [
-            ChatMessageList(),
-             Container(
-               alignment: Alignment.bottomCenter,
-               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 24,vertical: 16),
-                color: Color(0x54FFFFFF),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: messageController,
-                        style: TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                        hintText: "Message...",
-                        hintStyle: TextStyle(color: Colors.white54),
-                        border: InputBorder.none,
-                      ),
-                      ),
-             
-                    ),
-                    GestureDetector(
-                      onTap: (){
-                        sendMessage();
-                      },
-                      child: Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors:[
-                              const Color(0x36FFFFFF),
-                              const Color(0x0FFFFFFF),
-                            ]
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        padding: EdgeInsets.all(12),
-                        child: Image.asset("assets/images/send.png",)),
-                    ),
-                  ],
-                ),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Container(
+          child: Column(
+            children: [
+              Flexible(
+                child: chatMessageList() ,
               ),
-             ),
-          ],
+              chatControls(),
+              showEmojiPicker ? Container(child: emojiContainer(),) 
+              : Container(),
+            ],
+          ),
         ),
       ),
     );
   }
+
+  emojiContainer(){
+    return EmojiPicker(
+      bgColor: UniversalVariables.separatorColor,
+      indicatorColor: UniversalVariables.blueColor,
+      rows: 3,
+      columns: 7,
+      onEmojiSelected: (emoji, category) {
+        messageController.text 
+          = messageController.text + emoji.emoji;
+      },
+      recommendKeywords: ["face","happy","party","sad"],
+      numRecommended: 20,
+    );
+  }
+
+  
+  // For sending message in convo Screen ! ------------------------------------------------ Working here!!
+  Widget chatControls(){
+    // setWritingTo(bool val){
+    //   setState(() {
+    //     isWriting = val;
+    //   });
+    // }
+    
+   return Container(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+  
+        padding: EdgeInsets.all(10),
+        // padding: EdgeInsets.symmetric(horizontal: 24,vertical: 16),
+        // color: Color(0x54FFFFFF),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                  controller: messageController,
+                  focusNode: textFieldFocus,
+                  onTap: () => hideEmojiContainer() ,
+                  textCapitalization : TextCapitalization.sentences, 
+                  style: TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: "Type a message",
+                    hintStyle: TextStyle(color: Colors.grey),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(50.0),
+                      ),
+                      borderSide: BorderSide.none,
+                      ),
+                    contentPadding: 
+                      EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+                      filled: true,
+                      fillColor: UniversalVariables.separatorColor,
+                      suffixIcon: IconButton(
+                        splashColor: Colors.white,
+                        highlightColor: Colors.white,
+                        onPressed: () {
+                          if(!showEmojiPicker){
+                            hideKeyboard();
+                          }
+                          else {
+                            showKeyboard();
+                          }
+                          toggleEmojiContainer();
+                        },
+                        icon: Icon(Icons.face , color: Colors.white,),
+                      )
+                ),
+              ),
+            ),
+            Container(
+                  margin: EdgeInsets.only(left: 10),
+                  decoration: BoxDecoration(
+                      color: UniversalVariables.blueColor,
+                      shape: BoxShape.circle),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.send,
+                      size: 22,
+                      color: Colors.white,
+                    ),
+                    onPressed: () => sendMessage(),
+                  )
+              )
+          ],
+        ),
+      ),
+    );
+
+
+  }
+
+
+
 }
 
 
 class MessageTile extends StatelessWidget {
   final String message;
   final bool isSendByMe;
-  int sentTime;
+  final int sentTime;
   MessageTile(this.message,this.isSendByMe,this.sentTime);
 
   timeData(int time){
@@ -166,9 +258,10 @@ class MessageTile extends StatelessWidget {
     
     return Container(
       child: Container(
-      padding: EdgeInsets.only(
-        left: isSendByMe ? 0:  10,
-        right: isSendByMe ? 10 : 0),
+        padding: EdgeInsets.only(
+          left: isSendByMe ? 0:  10,
+          right: isSendByMe ? 10 : 0
+        ),
 
         margin: EdgeInsets.symmetric(vertical: 8),
         width: MediaQuery.of(context).size.width,
@@ -176,6 +269,9 @@ class MessageTile extends StatelessWidget {
           Alignment.centerRight 
           : Alignment.centerLeft,
         child: Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.65,
+          ) ,
           padding: EdgeInsets.symmetric(horizontal: 24,vertical: 16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -211,7 +307,6 @@ class MessageTile extends StatelessWidget {
                       color: Colors.white, fontSize: 11
                     ),
                   ),
-                
               ],
             ),
         ),

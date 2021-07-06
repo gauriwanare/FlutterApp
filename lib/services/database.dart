@@ -42,6 +42,7 @@ class DatabaseMethods{
       print(e.toString());
     });
   }
+  
   getChatRooms(String userName) async{
     return await FirebaseFirestore.instance
     .collection("ChatRoom")

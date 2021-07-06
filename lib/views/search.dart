@@ -1,5 +1,6 @@
 import 'package:chat_app/helper/constants.dart';
 import 'package:chat_app/services/database.dart';
+import 'package:chat_app/utils/universal_variables.dart';
 import 'package:chat_app/views/conversation_screen.dart';
 import 'package:chat_app/widgets/widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -61,9 +62,9 @@ class _SearchScreenState extends State<SearchScreen> {
       Navigator.push(context, MaterialPageRoute(
         builder: (context) => ConversationScreen(chatRoomId),
       ));
-    }else{
-      print("You cant text urself");
-    }
+      }else{
+        print("You cant text urself");
+      }
 
   }
 
@@ -95,7 +96,10 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
               padding: EdgeInsets.symmetric(horizontal: 16,vertical: 16),
               child: Text("Message", style: mediumTextStyle(),)),
-          )
+          ),
+          Divider(
+            color: Colors.grey,
+          ),
         ],
       ),
     );
@@ -114,56 +118,76 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: ApplicationToolbar(),
+      appBar: AppBar(
+        title: Text("Search", style: TextStyle(
+          fontSize: 28.0, fontWeight: FontWeight.bold
+          ),
+        ),
+      ),
       body: Container(
         child: Column(
           children: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 24,vertical: 16),
-              color: Color(0x54FFFFFF),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: searchTextEditingController,
-                      style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                      hintText: "search username...",
-                      hintStyle: TextStyle(color: Colors.white54),
-                      border: InputBorder.none,
-                    ),
-                    ),
-
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      initiateSearch();
-                    },
-                    child: Container(
-                      height: 40,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors:[
-                            const Color(0x36FFFFFF),
-                            const Color(0x0FFFFFFF),
-                          ]
-                        ),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      padding: EdgeInsets.all(12),
-                      child: Image.asset("assets/images/search_white.png",)),
-                  ),
-                ],
-              ),
-            ),
-            searchList()
+            searchControl(),
+            searchList(),
           ],),
       ),
 
     );
   }
+    Widget searchControl(){
+       return Container(
+        child: Container(
+        padding: EdgeInsets.all(10),
+        // padding: EdgeInsets.symmetric(horizontal: 24,vertical: 16),
+        // color: Color(0x54FFFFFF),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                  controller: searchTextEditingController,
+                  style: TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: "Search Username....",
+                    hintStyle: TextStyle(color: Colors.grey),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(50.0),
+                      ),
+                      borderSide: BorderSide.none,
+                      ),
+                    contentPadding: 
+                      EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+                      filled: true,
+                      fillColor: UniversalVariables.separatorColor,
+                ),
+              ),
+            ),
+            Container(
+                  margin: EdgeInsets.only(left: 10),
+                  decoration: BoxDecoration(
+                      color: UniversalVariables.blueColor,
+                      shape: BoxShape.circle),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.search,
+                      size: 22,
+                      color: Colors.white,
+                    ),
+                    onPressed: () => initiateSearch(),
+                  )
+              )
+          ],
+        ),
+      ),
+    );
+    }
 }
+
+
+
+
+
+
 
  getChatRoomId(String a, String b) {
     if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {

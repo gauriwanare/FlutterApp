@@ -18,6 +18,7 @@ class _CallPageState extends State<CallPage> {
   static final _users = <int>[];
   final _infoStrings = <String>[];
   bool muted = false;
+  bool toggleVideo = false;
   RtcEngine _engine;
 
   @override
@@ -124,16 +125,16 @@ class _CallPageState extends State<CallPage> {
             padding: const EdgeInsets.all(12.0),
           ),
           RawMaterialButton(
-            onPressed: () => _onCallEnd(context),
+            onPressed: _onToggleVideo,
             child: Icon(
-              Icons.call_end,
-              color: Colors.white,
-              size: 35.0,
+              toggleVideo ? Icons.videocam_off : Icons.videocam,
+              color: toggleVideo ? Colors.white : Colors.blueAccent,
+              size: 20.0,
             ),
             shape: CircleBorder(),
             elevation: 2.0,
-            fillColor: Colors.redAccent,
-            padding: const EdgeInsets.all(15.0),
+            fillColor: toggleVideo ? Colors.blueAccent : Colors.white,
+            padding: const EdgeInsets.all(12.0),
           ),
           RawMaterialButton(
             onPressed: _onSwitchCamera,
@@ -146,7 +147,19 @@ class _CallPageState extends State<CallPage> {
             elevation: 2.0,
             fillColor: Colors.white,
             padding: const EdgeInsets.all(12.0),
-          )
+          ),
+          RawMaterialButton(
+            onPressed: () => _onCallEnd(context),
+            child: Icon(
+              Icons.call_end,
+              color: Colors.white,
+              size: 20.0,
+            ),
+            shape: CircleBorder(),
+            elevation: 2.0,
+            fillColor: Colors.redAccent,
+            padding: const EdgeInsets.all(15.0),
+          ),
         ],
       ),
     );
@@ -246,4 +259,15 @@ class _CallPageState extends State<CallPage> {
   void _onSwitchCamera() {
     _engine.switchCamera();
   }
+
+  void _onToggleVideo(){
+    setState(() {
+      toggleVideo = !toggleVideo;
+    });
+    // _engine.muteLocalVideoStream(toggleVideo);
+    toggleVideo ?_engine.disableVideo() : _engine.enableVideo() ;
+    // _engine.enableLocalVideo(toggleVideo);
+  }
+
+
 }

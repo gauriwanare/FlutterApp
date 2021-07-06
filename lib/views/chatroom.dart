@@ -22,6 +22,7 @@ class _ChatRoomState extends State<ChatRoom> {
 
   Widget chatRoomList(){
     return StreamBuilder(
+      
       stream: chatRoomsStream,
       builder: (context, snapshot){
         return snapshot.hasData ? ListView.builder(
@@ -62,14 +63,8 @@ class _ChatRoomState extends State<ChatRoom> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-            icon:  Icon(Icons.menu),
-            iconSize: 30.0,
-            color: Colors.white,
-            onPressed: () {},
-          ),
         title: Center(
-          child: Text("Chats " , style: TextStyle(
+          child: Text("Chats" , style: TextStyle(
             fontSize: 28.0, 
             fontWeight: FontWeight.bold
             ),
@@ -84,7 +79,7 @@ class _ChatRoomState extends State<ChatRoom> {
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 4),
-              child: Icon(Icons.video_call),
+              child: Icon(Icons.videocam),
             ),
           ),
           GestureDetector(
@@ -100,7 +95,11 @@ class _ChatRoomState extends State<ChatRoom> {
           ),
         ],
       ),
-      body: chatRoomList(),
+      drawer: menuBar(),
+      body: Container(
+          padding: EdgeInsets.symmetric(vertical: 12.0), 
+          child: chatRoomList()
+        ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.search),
         onPressed: (){
@@ -111,6 +110,47 @@ class _ChatRoomState extends State<ChatRoom> {
       
     );
   }
+
+  // Menu-Bar on the Side
+  menuBar(){
+    return ClipRRect(
+        borderRadius: BorderRadius.horizontal(right: Radius.circular(35)),
+
+        child: Drawer(
+          
+          
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+             
+               new UserAccountsDrawerHeader(
+                accountName: new Text(Constants.myName, style: TextStyle(fontSize: 25),),
+                accountEmail: new Text(Constants.myEmail,style: TextStyle(fontSize: 20),),
+              ),
+
+             new ListTile(
+                leading: Icon(Icons.videocam, ),
+                title: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10),  
+                  child: Text("Group Video Call", style: TextStyle(fontSize: 25),
+                )),
+                onTap: (){
+                  Navigator.of(context).pop();
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) => MyHomePage())
+                    );
+                },
+              )
+            ],
+          ),
+        ),
+      );
+  }
+
+
+
+
+
 }
 
 class ChatRoomsTile extends StatelessWidget {
