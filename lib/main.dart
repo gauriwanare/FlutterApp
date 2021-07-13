@@ -1,6 +1,6 @@
 import 'package:chat_app/helper/authenticate.dart';
 import 'package:chat_app/helper/helperfunctions.dart';
-import 'package:chat_app/views/chatroom.dart';
+import 'package:chat_app/widgets/categoryselector.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 void main() async{
@@ -47,7 +47,7 @@ class _MyAppState extends State<MyApp> {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: userIsLoggedIn != null ? 
-      (userIsLoggedIn ? ChatRoom() : Authenticate()) 
+      (userIsLoggedIn ? CategorySelector(): Authenticate()) 
       : Authenticate(),
     );
   }

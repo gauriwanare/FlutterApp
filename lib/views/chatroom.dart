@@ -1,44 +1,28 @@
-import 'package:chat_app/helper/authenticate.dart';
 import 'package:chat_app/helper/constants.dart';
 import 'package:chat_app/helper/helperfunctions.dart';
+import 'package:chat_app/helper/recieverDetails.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
-import 'package:chat_app/views/HomePage.dart';
 import 'package:chat_app/views/conversation_screen.dart';
 import 'package:chat_app/views/search.dart';
 import 'package:chat_app/widgets/widget.dart';
 import 'package:flutter/material.dart';
+import 'package:chat_app/utils/Utils.dart';
 
 class ChatRoom extends StatefulWidget {
 
   @override
   _ChatRoomState createState() => _ChatRoomState();
 }
+// Global Variable
+Stream chatRoomsStream;
 
 class _ChatRoomState extends State<ChatRoom> {
   AuthMethods authMethods = new AuthMethods();
   DatabaseMethods databaseMethods = new DatabaseMethods();
-  Stream chatRoomsStream;
 
-  Widget chatRoomList(){
-    return StreamBuilder(
-      
-      stream: chatRoomsStream,
-      builder: (context, snapshot){
-        return snapshot.hasData ? ListView.builder(
-          itemCount: snapshot.data.docs.length,
-          itemBuilder: (context, index){
-            return ChatRoomsTile(
-              snapshot.data.docs[index]['chatroomId']
-              .toString().replaceAll("_", "")
-              .replaceAll(Constants.myName, ""),
-              snapshot.data.docs[index]['chatroomId']
-            );
-          }
-        ) : Container();
-      },
-    );
-  }
+
+
 
   @override
   void initState() {
@@ -49,8 +33,11 @@ class _ChatRoomState extends State<ChatRoom> {
   getUserInfo() async{
     Constants.myEmail = await HelperFunctions.getUserEmailSharedPreference();
     Constants.myName = await HelperFunctions.getUserNameSharedPreference();
+    Constants.myUserId = Utils
+      .createUserId(Constants.myEmail);
     print(Constants.myEmail.toString());
-    databaseMethods.getChatRooms(Constants.myName)
+    print(Constants.myUserId);
+    databaseMethods.getChatRooms(Constants.myUserId)
     .then((value){
       setState(() {
         chatRoomsStream = value;
@@ -62,107 +49,100 @@ class _ChatRoomState extends State<ChatRoom> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Center(
-          child: Text("Chats" , style: TextStyle(
-            fontSize: 28.0, 
-            fontWeight: FontWeight.bold
-            ),
-          ),
-        ),
-        actions: [
-          GestureDetector(
-            onTap: (){
-              Navigator.push(context, MaterialPageRoute(
-                builder: (context) => MyHomePage() 
-              ));
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 4),
-              child: Icon(Icons.videocam),
-            ),
-          ),
-          GestureDetector(
-            onTap: (){
-              authMethods.signOut();
-              Navigator.pushReplacement(context, MaterialPageRoute(
-                builder: (context) => Authenticate(),
-                ),);
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Icon(Icons.exit_to_app)),
-          ),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ChatListContainer(Constants.myUserId),
       ),
-      drawer: menuBar(),
-      body: Container(
-          padding: EdgeInsets.symmetric(vertical: 12.0), 
-          child: chatRoomList()
-        ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.search),
         onPressed: (){
           Navigator.push(context, MaterialPageRoute(
             builder: (context) => SearchScreen(),
              ));
-        } ,),
+        } ,
+      ),
       
     );
   }
-
-  // Menu-Bar on the Side
-  menuBar(){
-    return ClipRRect(
-        borderRadius: BorderRadius.horizontal(right: Radius.circular(35)),
-
-        child: Drawer(
-          
-          
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-             
-               new UserAccountsDrawerHeader(
-                accountName: new Text(Constants.myName, style: TextStyle(fontSize: 25),),
-                accountEmail: new Text(Constants.myEmail,style: TextStyle(fontSize: 20),),
-              ),
-
-             new ListTile(
-                leading: Icon(Icons.videocam, ),
-                title: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10),  
-                  child: Text("Group Video Call", style: TextStyle(fontSize: 25),
-                )),
-                onTap: (){
-                  Navigator.of(context).pop();
-                  Navigator.push(context, MaterialPageRoute(
-                    builder: (context) => MyHomePage())
-                    );
-                },
-              )
-            ],
-          ),
-        ),
-      );
-  }
-
-
-
-
-
 }
+
+class ChatListContainer extends StatefulWidget {
+  // const ChatListContainer({ Key? key }) : super(key: key);
+  final String currentUserId;
+
+  ChatListContainer(this.currentUserId);
+
+  @override
+  _ChatListContainerState createState() => _ChatListContainerState();
+}
+
+class _ChatListContainerState extends State<ChatListContainer> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: StreamBuilder(
+        stream: chatRoomsStream,
+        builder: (context, snapshot){
+          return snapshot.hasData ? ListView.builder(
+            itemCount: snapshot.data.docs.length,
+            itemBuilder: (context, index){
+              int time = snapshot.data.docs[index]['time'];
+              String chatRoomId =  snapshot.data
+                .docs[index]['chatroomId'].toString();
+              
+              RecieverDetails.recieverUserId = chatRoomId
+                .replaceAll("_","")
+                .replaceAll(Constants.myUserId,"");
+
+              RecieverDetails.recieverUserName = 
+                snapshot.data.docs[index]['userNames'][0] != Constants.myName 
+                  ? snapshot.data.docs[index]['userNames'][0] 
+                  : snapshot.data.docs[index]['userNames'][1];
+              
+              return ChatRoomsTile(
+                RecieverDetails.recieverUserName,
+                chatRoomId,
+                time,
+              );
+            }
+          ) : Container();
+        },
+    )
+      
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+
 
 class ChatRoomsTile extends StatelessWidget {
   final String userName;
   final String chatRoomId;
-  ChatRoomsTile(this.userName,this.chatRoomId);
+  final int time;
+  ChatRoomsTile(this.userName,this.chatRoomId, this.time);
+  
+  timeData(int time){
+    return  DateTime
+    .fromMicrosecondsSinceEpoch(time)
+    .toString()
+    .substring(11,16);
+  }
+  
+  
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
         Navigator.push(context, MaterialPageRoute(
-          builder: (context) => ConversationScreen(chatRoomId)
+          builder: (context) => ConversationScreen(chatRoomId,userName)
           ));
       },
       child: Column(
@@ -188,6 +168,13 @@ class ChatRoomsTile extends StatelessWidget {
                 ),
                 SizedBox(width: 8,),
                 Text(userName, style: mediumTextStyle(),),
+                Spacer(),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16,vertical: 16),
+                  child: Text(timeData(time), style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.white,
+                  ),)),
               ],
               ),
           ),

@@ -8,7 +8,8 @@ import 'package:flutter/material.dart';
 class ConversationScreen extends StatefulWidget {
   // const ConversationScreen({ Key? key }) : super(key: key);
   final String chatRoomId;
-  ConversationScreen(this.chatRoomId);
+  final String recieverUserName;
+  ConversationScreen(this.chatRoomId, this.recieverUserName);
   @override
   _ConversationScreenState createState() => _ConversationScreenState();
 }
@@ -22,14 +23,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
   bool showEmojiPicker = false;
   FocusNode textFieldFocus = new FocusNode();
   
-  
-  
-  String recieverName(){
-      return widget.chatRoomId.toString()
-            .replaceAll("_", "")
-            .replaceAll(Constants.myName, "");
-  }
-
   Widget chatMessageList(){
     return Container(
       child: StreamBuilder(
@@ -61,6 +54,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       "time" : DateTime.now().microsecondsSinceEpoch,
     }; 
     databaseMethods.addConversationMessage(widget.chatRoomId, messageMap);
+    
     messageController.text = "";
     }
   }
@@ -85,16 +79,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
     });
   }
 
-  // showEmojiContainer(){
-  //   setState(() {
-  //     showEmojiPicker = true;
-  //   });
-  // }
-    toggleEmojiContainer(){
+  // Close the Emoji Container if it is already OPEN
+  toggleEmojiContainer(){
       setState(() {
         showEmojiPicker = !showEmojiPicker;
       });
-    }
+  }
 
 
 
@@ -104,7 +94,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       appBar: AppBar(
         title: 
           Container(
-            child: Text(recieverName(),
+            child: Text(widget.recieverUserName,
               style: TextStyle(
                 fontSize: 28.0,
                 fontWeight: FontWeight.bold,
@@ -158,11 +148,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
   
   // For sending message in convo Screen ! ------------------------------------------------ Working here!!
   Widget chatControls(){
-    // setWritingTo(bool val){
-    //   setState(() {
-    //     isWriting = val;
-    //   });
-    // }
     
    return Container(
       alignment: Alignment.bottomCenter,

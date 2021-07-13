@@ -1,11 +1,12 @@
+import 'package:chat_app/helper/constants.dart';
 import 'package:chat_app/helper/helperfunctions.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
+import 'package:chat_app/utils/Utils.dart';
+import 'package:chat_app/widgets/categoryselector.dart';
 import 'package:chat_app/widgets/widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
-import 'chatroom.dart';
 
 class SignIn extends StatefulWidget {
   final Function toggle;
@@ -29,8 +30,9 @@ class _SignInState extends State<SignIn> {
   signIn(){
 
     if(formKey.currentState.validate()){
+      String email = emailTextEditingController.text;
       HelperFunctions
-          .saveUserEmailSharedPreference(emailTextEditingController.text);
+          .saveUserEmailSharedPreference(email);
       
       setState(() {
         isLoading = true;
@@ -39,6 +41,7 @@ class _SignInState extends State<SignIn> {
       databaseMethods.getUserByUserEmail(emailTextEditingController.text)
       .then((val){
         snapshotUserInfo = val;
+        Constants.myUserId = Utils.createUserId(email);
         HelperFunctions
           .saveUserNameSharedPreference(snapshotUserInfo.docs[0]['name']);
       });
@@ -47,7 +50,7 @@ class _SignInState extends State<SignIn> {
         passwordTextEditingController.text).then((val){
           if(val != null){
             Navigator.pushReplacement(context, MaterialPageRoute(
-                builder: (context) => ChatRoom()
+                builder: (context) => CategorySelector()
                 ),
               );
           }

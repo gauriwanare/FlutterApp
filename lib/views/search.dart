@@ -1,4 +1,5 @@
 import 'package:chat_app/helper/constants.dart';
+import 'package:chat_app/helper/recieverDetails.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:chat_app/utils/universal_variables.dart';
 import 'package:chat_app/views/conversation_screen.dart';
@@ -19,10 +20,10 @@ class _SearchScreenState extends State<SearchScreen> {
 
   QuerySnapshot searchSnapshot;
 
-
+  // Get QuerySnapshot for the search 
   initiateSearch(){
     databaseMethods
-        .getUserByUsername(searchTextEditingController.text)
+        .getUserByUserId(searchTextEditingController.text.trim())
         .then((val){
           setState(() {
             searchSnapshot = val;
@@ -39,28 +40,33 @@ class _SearchScreenState extends State<SearchScreen> {
       itemCount: searchSnapshot.docs.length,
       shrinkWrap: true,
       itemBuilder: (context, index){
-        return SearchTile(
+        return searchTile(
           userName: searchSnapshot.docs[index]["name"],
+          userId: searchSnapshot.docs[index]["userId"],
           userEmail: searchSnapshot.docs[index]["email"],
         );
       },
     ) :Container();
   }
 
- createChatroomAndStartConversation(String userName){
+ createChatroomAndStartConversation(String userId,String userName){
 
-    if(userName != Constants.myName){
-        String chatRoomId = getChatRoomId(userName, Constants.myName);
+    if(userId != Constants.myUserId){
+      String chatRoomId = getChatRoomId(userId, Constants.myUserId);
 
-      List<String> users = [userName, Constants.myName];
+      List<String> users = [userId, Constants.myUserId];
+      List<String> userNames = [ userName ,Constants.myName ];
       Map<String, dynamic> chatRoomMap = {
         "users" : users,
+        "userNames" : userNames,
         "chatroomId" : chatRoomId ,
+        "time" : DateTime.now().microsecondsSinceEpoch,
       };
-
+      RecieverDetails.recieverUserName = userName;
+      RecieverDetails.recieverUserId = userId;
       DatabaseMethods().createChatRoom(chatRoomId, chatRoomMap);
       Navigator.push(context, MaterialPageRoute(
-        builder: (context) => ConversationScreen(chatRoomId),
+        builder: (context) => ConversationScreen(chatRoomId,RecieverDetails.recieverUserName),
       ));
       }else{
         print("You cant text urself");
@@ -68,12 +74,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
   }
 
-  Widget SearchTile({String userName,String userEmail}){
+  Widget searchTile({String userName,String userId, String userEmail}){
     
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 24, vertical : 16),
       child: Row(
-        children: [
+        children:[
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
 
@@ -86,6 +92,7 @@ class _SearchScreenState extends State<SearchScreen> {
           GestureDetector(
             onTap: (){
               createChatroomAndStartConversation(
+                userId,
                 userName
               );
             },
@@ -147,7 +154,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   controller: searchTextEditingController,
                   style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: "Search Username....",
+                    hintText: "Search UserId....",
                     hintStyle: TextStyle(color: Colors.grey),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(

@@ -1,6 +1,8 @@
+import 'package:chat_app/helper/constants.dart';
 import 'package:chat_app/helper/helperfunctions.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
+import 'package:chat_app/utils/Utils.dart';
 import 'package:chat_app/views/chatroom.dart';
 import 'package:chat_app/widgets/widget.dart';
 import 'package:flutter/material.dart';
@@ -29,26 +31,27 @@ class _SignUpState extends State<SignUp> {
   signMeUP() async{ 
 
       if(formKey.currentState.validate()){
-        Map<String, String> userInfoMap = {
-              "name" :userNameTextEditingController.text,
-              "email" : emailTextEditingController.text,
-        };
         setState(() {
           isLoading = true;
         });
         authMethods.registerWithEmailAndPassword(emailTextEditingController.text, 
             passwordTextEditingController.text).then((val){
               // print("$val");
-        HelperFunctions.saveUserLoggedInSharedPreference(true);
-        HelperFunctions.saveUserEmailSharedPreference(
-          emailTextEditingController.text);
-        HelperFunctions.saveUserNameSharedPreference(
-          userNameTextEditingController.text);
-          
 
-
-
-
+            String email = emailTextEditingController.text;
+            HelperFunctions.saveUserLoggedInSharedPreference(true);
+            HelperFunctions.saveUserEmailSharedPreference(
+              email
+              );
+            HelperFunctions.saveUserNameSharedPreference(
+              userNameTextEditingController.text);
+            Constants.myUserId = Utils.createUserId(email);
+            
+            Map<String, String> userInfoMap = {
+                  "name" :userNameTextEditingController.text,
+                  "email" : email,
+                  "userId" : Constants.myUserId,
+            };
 
             databaseMethods.uploadUserInfo(userInfoMap);
 
