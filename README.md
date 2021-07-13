@@ -3,6 +3,10 @@
 
 A fully functional Flutter Application with Chatting(group/single), Video Calling .
 
+## Documentation and user guide 
+https://github.com/gauriwanare/FlutterApp/blob/main/documentation.md
+
+
 ## Getting Started
 - `git clone https://github.com/gauriwanare/FlutterApp.git`
 - `cd FlutterApp`
