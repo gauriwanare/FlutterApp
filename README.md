@@ -8,6 +8,8 @@ A fully functional Flutter Application with Chatting(group/single), Video Callin
 - `cd FlutterApp`
 - `flutter packages get`
 - `flutter run`
+- `Test user1:- email: gauri@outlook.com , password: password `
+- `Test user2:- email: sameer@gmail.com , password: password `
 
 # Screenshots
 ## Sign up and Sign in screens 
