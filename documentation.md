@@ -89,7 +89,8 @@ Users can also leave groups easily by just going inside the group and clicking o
 Video calls are based of on Jitsi so inorder to avoid joining random calls , We created a room-id based on current time in milliseconds since Epoch concatenated with “chatapp” at the end. To make it easier for people to join rooms together we implemented copy room ID and also paste room ID. Also just long press on the chat message will automatically copy the text to the clipboard. 
 
 So users can just copy the room ID from the clipboard(which is automatically generated) send it to other users then other users can come to the video call section just paste in the room ID by double tapping on the paste button. Hurray and then users can enjoy some facetime together with a load of features built in. 
-Other’s Friends not registered on the app, Why worry we got you. Users can share the room link on multiple social media platforms so other friends can join them.
+
+### Other’s Friends not registered on the app, Why worry we got you. Users can share the room link on multiple social media platforms so other friends can join them.
 
 
 
