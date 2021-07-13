@@ -1,17 +1,18 @@
-# Meetegy
-# Microsoft Engage 2021 Project
+# chat_app
+## Microsoft Engage 2021
 
-A new Flutter project. --> A simple Chat App using Flutter!
+A fully functional Flutter Application with Chatting(group/single), Video Calling .
 
 ## Getting Started
+- `git clone https://github.com/gauriwanare/FlutterApp.git`
+- `cd FlutterApp`
+- `flutter packages get`
+- `flutter run`
 
-This project is a starting point for a Flutter application.
+# Screenshots
+## Sign up and Sign in screens 
+<img width="180" height="350" src="https://github.com/gauriwanare/FlutterApp/blob/main/SS/signup.jpeg"/> <img width="180" height="350" src="https://github.com/gauriwanare/FlutterApp/blob/main/SS/Signin.jpeg"/> 
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Chat Screen And Chat
+<img width="180" height="350" src="https://github.com/gauriwanare/FlutterApp/blob/main/SS/SingleChat.jpeg"/> 
+<img width="180" height="350" src="https://github.com/gauriwanare/FlutterApp/blob/main/SS/SingleChatConvo.jpeg"/> 
