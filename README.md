@@ -1,4 +1,4 @@
-# chat_app
+# Meetegy
 ## Microsoft Engage 2021
 
 A fully functional Flutter Application with Chatting(group/single), Video Calling .
