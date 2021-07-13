@@ -1,4 +1,5 @@
-# chat_app
+# Meetegy
+# Microsoft Engage 2021 Project
 
 A new Flutter project. --> A simple Chat App using Flutter!
 
