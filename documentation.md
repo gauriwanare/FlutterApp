@@ -69,16 +69,25 @@ Email login/ signup
 ## Single chats
 Users can register using any email , After registering user get into chat page which the main page , here user will see a search bar on the bottom right of the page. Clicking on it forwards user to search screen. Users can search for other registered using their userId’s (the first part of the email before ‘@’ + domain of the email -> for example john@gmail.com -> the user ID assigned to this user will be johngmail.) 
 From here user can click on message button to text the other person. 
+
 The message functionality works as follows:-
-	When a person clicks on the message button on search screen a new document is created under chatRoom collection of firebase. The name of the document is as “userId1_userId2” (userId1 is lexographically smaller than userId2 will be referred to as ChatId) this document contains field such as list of users present in chat, Time of the latest message, Also it consists of another section called chats where all chats are stored . The chat collection contains message documents with fields such as time of message , sent by , message details.
-	All the documents names in which the user’s UserId is present in the users list in the chatroom collection are fetched from firebase and displayed on users chat room.
-	A new document is added to chatId each time the user sends a message.
+
+-	When a person clicks on the message button on search screen a new document is created under chatRoom collection of firebase. The name of the document is as “userId1_userId2” (userId1 is lexographically smaller than userId2 will be referred to as ChatId) this document contains field such as list of users present in chat, Time of the latest message, Also it consists of another section called chats where all chats are stored . The chat collection contains message documents with fields such as time of message , sent by , message details.
+
+- All the documents names in which the user’s UserId is present in the users list in the chatroom collection are fetched from firebase and displayed on users chat room.
+
+-	A new document is added to chatId each time the user sends a message.
+-	
 The group feature works in a similar fashion. 
+
 ## Groups
 Creating groups is an easy task. The user just has to switch to the group section click on the plus button on the bottom right create a group name. Search for users using userId’s similar to searching in 1-1 chat section. Click on the Top right button when done adding users . The button will only activate if u add atleast 1 user.
 Users can also leave groups easily by just going inside the group and clicking on the leave option 
+
 ## Video Calls
+
 Video calls are based of on Jitsi so inorder to avoid joining random calls , We created a room-id based on current time in milliseconds since Epoch concatenated with “chatapp” at the end. To make it easier for people to join rooms together we implemented copy room ID and also paste room ID. Also just long press on the chat message will automatically copy the text to the clipboard. 
+
 So users can just copy the room ID from the clipboard(which is automatically generated) send it to other users then other users can come to the video call section just paste in the room ID by double tapping on the paste button. Hurray and then users can enjoy some facetime together with a load of features built in. 
 Other’s Friends not registered on the app, Why worry we got you. Users can share the room link on multiple social media platforms so other friends can join them.
 
