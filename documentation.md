@@ -77,7 +77,7 @@ The message functionality works as follows:-
 - All the documents names in which the user’s UserId is present in the users list in the chatroom collection are fetched from firebase and displayed on users chat room.
 
 -	A new document is added to chatId each time the user sends a message.
--	
+
 The group feature works in a similar fashion. 
 
 ## Groups
